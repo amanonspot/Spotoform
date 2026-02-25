@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SPOTO – List Your Property</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --purple:#7c4dff;
+      --green:#22c55e;
+      --bg:#f6f7fb;
+      --border:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      margin:0;
+      color:var(--text);
+    }
+
+    .container{max-width:560px;margin:0 auto;padding:16px}
+
+    .card{
+      background:#fff;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 15px 40px rgba(0,0,0,.06);
+    }
+
+    h1{font-size:20px;margin:0 0 6px;font-weight:700}
+    .subtitle{font-size:13px;color:var(--muted);margin:0 0 16px}
+    .headline{font-size:16px;font-weight:700;margin:0 0 4px}
+    .trust-line{font-size:13px;color:var(--muted);margin:0 0 16px}
+
+    .step{display:none}
+    .step.active{display:block}
+    .field{margin-bottom:16px}
+
+    label{font-size:13px;color:#374151;display:block;margin-bottom:6px;font-weight:600}
+
+    input,select{
+      width:100%;
+      padding:13px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      font-size:14px;
+      transition:.2s;
+      font-family:inherit;
+    }
+
+    input:focus,select:focus{
+      outline:none;
+      border-color:var(--purple);
+      box-shadow:0 0 0 3px rgba(124,77,255,.12);
+    }
+
+    .small{font-size:12px;color:var(--muted);margin-top:6px}
+
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      padding:8px 14px;
+      border-radius:999px;
+      background:#f3f4f6;
+      border:1px solid transparent;
+      cursor:pointer;
+      font-size:13px;
+      transition:.2s;
+    }
+    .chip.active{background:#ede9fe;border-color:var(--purple);color:var(--purple);font-weight:600}
+
+    .choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .choice{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#f9fafb;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:12px;
+      cursor:pointer;
+      min-height:48px;
+      font-size:14px;
+      font-weight:500;
+      user-select:none;
+    }
+    .choice input{width:auto;margin:0}
+    .choice.active{border-color:var(--purple);background:#f5f3ff;color:#5b21b6}
+
+    .radio-row{display:flex;gap:8px;flex-wrap:wrap}
+    .radio-pill{
+      flex:1;
+      min-width:120px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#f9fafb;
+      cursor:pointer;
+      font-weight:500;
+    }
+    .radio-pill.active{border-color:var(--purple);background:#f5f3ff;color:#5b21b6}
+
+    .amenity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .amenity-card{
+      padding:12px;
+      border-radius:14px;
+      background:#f3f4f6;
+      font-size:13px;
+      font-weight:500;
+      cursor:pointer;
+      border:2px solid transparent;
+      text-align:center;
+    }
+    .amenity-card.active{background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:var(--purple);color:#5b21b6;font-weight:600}
+
+    .highlight-field{
+      border:2px solid #f59e0b;
+      background:#fffbeb;
+      box-shadow:0 0 0 3px rgba(245,158,11,.12);
+      font-weight:600;
+    }
+
+    button{
+      border:none;
+      border-radius:14px;
+      padding:14px;
+      width:100%;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      transition:.2s;
+      font-family:inherit;
+    }
+    .btn-green{background:var(--green);color:#fff}
+    .btn-purple{background:var(--purple);color:#fff}
+    .btn-back{background:#e5e7eb;color:#111}
+
+    .sticky{position:sticky;bottom:0;background:#fff;padding-top:10px}
+    .actions{display:flex;gap:10px}
+
+    .progress{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f3f4f6;
+      color:#4b5563;
+      font-size:12px;
+      font-weight:600;
+      margin-bottom:14px;
+    }
+
+    .hidden{display:none !important}
+
+    @media(max-width:480px){
+      .card{padding:18px}
+      h1{font-size:18px}
+      .choice-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1 id="title">🏠 SPOTO – List Your Property</h1>
+      <p id="subtitle" class="subtitle">3-Step Smart Form</p>
+      <p id="headline" class="headline hidden">Fill Vacant Beds Faster.</p>
+      <p id="trustLine" class="trust-line hidden">Verified tenants. Zero brokerage spam.</p>
+
+      <form id="form">
+        <div id="defaultFormVariant">
+          <div class="field">
+            <label>Property Type</label>
+            <div class="chips" id="propertyTypeChips">
+              <div class="chip" data-value="1BHK">1BHK</div>
+              <div class="chip" data-value="2BHK">2BHK</div>
+              <div class="chip" data-value="3BHK">3BHK</div>
+              <div class="chip" data-value="House">House</div>
+              <div class="chip" data-value="PG">PG</div>
+            </div>
+            <input type="hidden" id="propertyTypeValue" value="" />
+          </div>
+
+          <div class="field">
+            <label>Locality</label>
+            <input type="text" placeholder="HSR, Whitefield, Marathahalli…" />
+          </div>
+
+          <div class="field">
+            <label>Monthly Rent (₹)</label>
+            <input type="number" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label>Deposit (₹)</label>
+            <input type="number" inputmode="numeric" />
+          </div>
+
+          <button type="button" class="btn-green" id="switchToPgBtn">Continue</button>
+        </div>
+
+        <input type="hidden" name="listing_type" id="listingTypeMeta" value="PG" />
+        <input type="hidden" name="status" id="statusMeta" value="Pending Review" />
+
+        <div id="pgFormVariant" class="hidden">
+          <div class="progress" id="pgProgress">Step 1/3</div>
+
+          <div class="step active" id="pgStep1">
+            <div class="field">
+              <label for="pgName">PG Name</label>
+              <input id="pgName" type="text" maxlength="80" placeholder="Example: Sri Sai Residency PG" required />
+            </div>
+
+            <div class="field">
+              <label for="pgLocation">Location</label>
+              <input id="pgLocation" type="text" placeholder="HSR Layout, near BDA Complex" required />
+              <div class="small">Locality + Landmark</div>
+            </div>
+
+            <div class="field">
+              <label>For</label>
+              <div class="choice-grid" id="forChoices">
+                <label class="choice"><input type="checkbox" name="for" value="Boys" /> Boys</label>
+                <label class="choice"><input type="checkbox" name="for" value="Girls" /> Girls</label>
+                <label class="choice"><input type="checkbox" name="for" value="Co-living / Unisex" /> Co-living / Unisex</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="rentPerBed">Rent Per Bed (₹)</label>
+              <input id="rentPerBed" type="number" min="0" step="1" inputmode="numeric" required />
+            </div>
+
+            <div class="field">
+              <label>Room Type</label>
+              <div class="choice-grid" id="roomTypeChoices">
+                <label class="choice"><input type="checkbox" name="roomType" value="Single" /> Single</label>
+                <label class="choice"><input type="checkbox" name="roomType" value="Double Sharing" /> Double Sharing</label>
+                <label class="choice"><input type="checkbox" name="roomType" value="Triple Sharing" /> Triple Sharing</label>
+                <label class="choice"><input type="checkbox" name="roomType" value="4+ Sharing" /> 4+ Sharing</label>
+              </div>
+            </div>
+
+            <div class="sticky">
+              <button type="button" class="btn-green" id="toStep2">Continue →</button>
+            </div>
+          </div>
+
+          <div class="step" id="pgStep2">
+            <div class="field">
+              <label for="vacantBeds">Vacant Beds</label>
+              <input id="vacantBeds" class="highlight-field" type="number" min="0" step="1" inputmode="numeric" required />
+              <div class="small">Show real availability to fill beds faster.</div>
+            </div>
+
+            <div class="field">
+              <label>Food Included?</label>
+              <div class="radio-row" id="foodRadio">
+                <label class="radio-pill"><input type="radio" name="foodIncluded" value="Yes" /> Yes</label>
+                <label class="radio-pill"><input type="radio" name="foodIncluded" value="No" /> No</label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Key Amenities</label>
+              <div class="amenity-grid" id="pgAmenities">
+                <div class="amenity-card" data-value="Wifi">Wifi</div>
+                <div class="amenity-card" data-value="AC">AC</div>
+                <div class="amenity-card" data-value="Washing Machine">Washing Machine</div>
+                <div class="amenity-card" data-value="Lift">Lift</div>
+                <div class="amenity-card" data-value="Power Backup">Power Backup</div>
+                <div class="amenity-card" data-value="CCTV">CCTV</div>
+              </div>
+            </div>
+
+            <div class="sticky actions">
+              <button type="button" class="btn-back" data-back="1">← Back</button>
+              <button type="button" class="btn-green" id="toStep3">Almost Done →</button>
+            </div>
+          </div>
+
+          <div class="step" id="pgStep3">
+            <div class="field">
+              <label for="ownerName">Owner Name</label>
+              <input id="ownerName" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="ownerPhone">Phone Number</label>
+              <input id="ownerPhone" type="tel" inputmode="numeric" maxlength="10" required />
+              <div class="small">🔒 Only serious tenants will contact you.</div>
+            </div>
+
+            <div class="sticky actions">
+              <button type="button" class="btn-back" data-back="2">← Back</button>
+              <button type="submit" class="btn-purple">🟣 List My PG – Free</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentPgStep = 1;
+
+    const defaultVariant = document.getElementById('defaultFormVariant');
+    const pgVariant = document.getElementById('pgFormVariant');
+    const title = document.getElementById('title');
+    const subtitle = document.getElementById('subtitle');
+    const headline = document.getElementById('headline');
+    const trustLine = document.getElementById('trustLine');
+    const propertyTypeValue = document.getElementById('propertyTypeValue');
+    const pgProgress = document.getElementById('pgProgress');
+
+    function setHeaderForPG(isPG){
+      if(isPG){
+        title.textContent = '🏠 SPOTO – List Your PG';
+        subtitle.classList.add('hidden');
+        headline.classList.remove('hidden');
+        trustLine.classList.remove('hidden');
+      }else{
+        title.textContent = '🏠 SPOTO – List Your Property';
+        subtitle.classList.remove('hidden');
+        headline.classList.add('hidden');
+        trustLine.classList.add('hidden');
+      }
+    }
+
+    function showPGStep(step){
+      currentPgStep = step;
+      document.querySelectorAll('#pgFormVariant .step').forEach((el)=>el.classList.remove('active'));
+      document.getElementById(`pgStep${step}`).classList.add('active');
+      pgProgress.textContent = `Step ${step}/3`;
+      window.scrollTo(0,0);
+    }
+
+    function selectedCount(name){
+      return document.querySelectorAll(`input[name="${name}"]:checked`).length;
+    }
+
+    function onPropertyTypeChange(value){
+      propertyTypeValue.value = value;
+      document.querySelectorAll('#propertyTypeChips .chip').forEach((chip)=>{
+        chip.classList.toggle('active', chip.dataset.value === value);
+      });
+
+      if(value === 'PG'){
+        defaultVariant.classList.add('hidden');
+        pgVariant.classList.remove('hidden');
+        setHeaderForPG(true);
+        showPGStep(1);
+      } else {
+        defaultVariant.classList.remove('hidden');
+        pgVariant.classList.add('hidden');
+        setHeaderForPG(false);
+      }
+    }
+
+    function validateStep1(){
+      const pgName = document.getElementById('pgName').value.trim();
+      const pgLocation = document.getElementById('pgLocation').value.trim();
+      const rentPerBed = document.getElementById('rentPerBed').value;
+      if(!pgName || !pgLocation || !rentPerBed){
+        alert('Please complete PG Name, Location, and Rent Per Bed.');
+        return false;
+      }
+      if(selectedCount('for') === 0){
+        alert('Please select who this PG is for.');
+        return false;
+      }
+      if(selectedCount('roomType') === 0){
+        alert('Please select at least one Room Type.');
+        return false;
+      }
+      return true;
+    }
+
+    function validateStep2(){
+      const vacantBeds = Number(document.getElementById('vacantBeds').value);
+      if(Number.isNaN(vacantBeds) || vacantBeds < 0){
+        alert('Vacant Beds must be 0 or more.');
+        return false;
+      }
+      if(!document.querySelector('input[name="foodIncluded"]:checked')){
+        alert('Please select whether food is included.');
+        return false;
+      }
+      return true;
+    }
+
+    function resetPGState(){
+      document.querySelectorAll('#pgFormVariant input[type="text"], #pgFormVariant input[type="tel"], #pgFormVariant input[type="number"]').forEach((input)=>{input.value='';});
+      document.querySelectorAll('#pgFormVariant input[type="checkbox"], #pgFormVariant input[type="radio"]').forEach((input)=>{input.checked=false;});
+      document.querySelectorAll('.amenity-card, .choice, .radio-pill').forEach((el)=>el.classList.remove('active'));
+      showPGStep(1);
+    }
+
+    document.getElementById('propertyTypeChips').addEventListener('click',(e)=>{
+      if(e.target.classList.contains('chip')) onPropertyTypeChange(e.target.dataset.value);
+    });
+
+    document.getElementById('switchToPgBtn').addEventListener('click',()=>{
+      if(propertyTypeValue.value === 'PG'){
+        onPropertyTypeChange('PG');
+      } else {
+        alert('Select "PG" as Property Type to open the PG listing flow.');
+      }
+    });
+
+    document.addEventListener('change',(e)=>{
+      if(e.target.matches('.choice input')){
+        e.target.closest('.choice').classList.toggle('active', e.target.checked);
+      }
+      if(e.target.matches('.radio-pill input')){
+        document.querySelectorAll('.radio-pill').forEach((pill)=>pill.classList.remove('active'));
+        if(e.target.checked){
+          e.target.closest('.radio-pill').classList.add('active');
+        }
+      }
+    });
+
+    document.getElementById('pgAmenities').addEventListener('click',(e)=>{
+      if(e.target.classList.contains('amenity-card')){
+        e.target.classList.toggle('active');
+      }
+    });
+
+    document.getElementById('toStep2').addEventListener('click',()=>{
+      if(validateStep1()) showPGStep(2);
+    });
+
+    document.getElementById('toStep3').addEventListener('click',()=>{
+      if(validateStep2()) showPGStep(3);
+    });
+
+    document.querySelectorAll('[data-back]').forEach((button)=>{
+      button.addEventListener('click',()=>showPGStep(Number(button.dataset.back)));
+    });
+
+    document.getElementById('form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const ownerName = document.getElementById('ownerName').value.trim();
+      const ownerPhone = document.getElementById('ownerPhone').value.trim();
+      if(!ownerName){
+        alert('Please enter Owner Name.');
+        return;
+      }
+      if(!/^\d{10}$/.test(ownerPhone)){
+        alert('Please enter a valid 10-digit phone number.');
+        return;
+      }
+
+      const payload = {
+        listing_type: 'PG',
+        status: 'Pending Review',
+        pg_name: document.getElementById('pgName').value.trim(),
+        location: document.getElementById('pgLocation').value.trim(),
+        for: Array.from(document.querySelectorAll('input[name="for"]:checked')).map((i)=>i.value),
+        rent_per_bed: Number(document.getElementById('rentPerBed').value),
+        room_type: Array.from(document.querySelectorAll('input[name="roomType"]:checked')).map((i)=>i.value),
+        vacant_beds: Number(document.getElementById('vacantBeds').value),
+        food_included: document.querySelector('input[name="foodIncluded"]:checked').value,
+        amenities: Array.from(document.querySelectorAll('#pgAmenities .amenity-card.active')).map((el)=>el.dataset.value),
+        owner_name: ownerName,
+        phone_number: ownerPhone
+      };
+
+      console.log('PG submit payload:', payload);
+      alert('PG listing submitted successfully. Status: Pending Review.');
+      resetPGState();
+      onPropertyTypeChange('');
+    });
+  </script>
+</body>
+</html>
